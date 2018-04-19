@@ -180,7 +180,7 @@ CAS是一个单点登录框架，开始有耶鲁大学的一个组织开发，�
   </filter-mapping>
 ```
 访问：http://client1.zhoubang85.com:18080/，会自动跳转到CAS认证界面
-https://server.zhoubang85.com:8443/cas/login?service=http%3A%2F%2Fclient1.zhoubang85.com%3A18080%2F,因为没有登陆过CAS认证系统，CAS认证系统拦截你访问的客户端应用，首先进入到认证系统登陆界面，同时URL后面加上你想访问的地址信息，登陆成功后，会跳转到http://client1.zhoubang85.com:18080/
+https://server.zhoubang85.com:8443/cas/login?service=http%3A%2F%2Fclient1.zhoubang85.com%3A18080%2F,因为没有登陆过CAS认证系统，CAS认证系统拦截你访问的客户端应用，首先进入到认证系统登陆界面，同时URL后面加上你想访问的地址信息，登陆成功后，会跳转到http://client1.zhoubang85.com:18080/http://client1.zhoubang85.com:18080/;jsessionid=976B04415BED56517271994CECE23015
 
 ***错误解决：***如果出现PKIX path building failed错误
 原因：客户端run的jdk和server端run的jdk版本不同，仔细检查一下，run的是不是你导入证书的那个jdk，还有生成证书是需注意“您的名字和姓氏”这一项中，需天cas server的host name
