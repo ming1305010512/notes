@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="test">
+
+    <!--
+    这里的id表示mapper statement的id
+    -->
+    <select id="queryUser" parameterType="int" resultType="com.lm.mybatis.entity.User" >
+        select * from user where id=#{id}
+    </select>
+    
+    <select id="queryByName" parameterType="java.lang.String" resultType="com.lm.mybatis.entity.User">
+        select * from USER where name LIKE "%${value}%";
+    </select>
+    <insert id="insertUser" parameterType="com.lm.mybatis.entity.User">
+
+        <selectKey keyProperty="id" resultType="java.lang.Integer">
+            SELECT Last_insert_id()
+        </selectKey>
+        INSERT  INTO user(name,password,address,birthday) VALUES (#{name},#{password},#{address},#{birthday})
+    </insert>
+
+    <!--删除一条用户-->
+    <delete id="deleteUser" parameterType="int">
+        DELETE  FROM USER WHERE id=#{id}
+    </delete>
+
+    <!--更新一条用户-->
+    <update id="updateUser" parameterType="com.lm.mybatis.entity.User">
+        UPDATE user SET name=#{name},password=#{password},address=#{address},birthday=#{birthday} WHERE id=#{id}
+    </update>
+
+</mapper>

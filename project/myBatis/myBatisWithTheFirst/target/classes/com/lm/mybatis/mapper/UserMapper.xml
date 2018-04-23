@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lm.mybatis.mapper.UserMapper">
+
+
+    <!--定义sql片段
+        注意：1、在定义片段时，通常基于单表来定义
+              2、一般不加where
+    -->
+    <sql id="query_user">
+        <if test="userCustom!=null">
+            <if test="userCustom.name!=null and userCustom.name!=''">
+                and name like '%${userCustom.name}%'
+            </if>
+            <if test="userCustom.address!=null and userCustom.address!=''">
+                and address=#{userCustom.address}
+            </if>
+            <!--使用foreach遍历传入的ids
+                collection:需要遍历的集合
+                item：集合中元素的名称
+                open:开始遍历时拼接的串
+                close:结束遍历时拼接的串
+                separator:中间拼接的串
+            -->
+            <foreach collection="ids" item="user_id" open="and id in(" close=")" separator=",">
+              #{user_id}
+            </foreach>
+        </if>
+    </sql>
+
+    <!--用户的综合查询-->
+
+    <select id="queryUserList" parameterType="com.lm.mybatis.entity.UserQueryVo"
+            resultType="com.lm.mybatis.entity.UserCustom">
+
+        SELECT * from user
+        <!--where会把sql中的第一个and去掉-->
+        <where>
+           <!--引用sql片段,如果在另一个mapper中，需要加namespace-->
+            <include refid="query_user"/>
+        </where>
+    </select>
+
+    <!--根据id查询用户信息-->
+    <!--
+    这里的id表示mapper statement的id
+    -->
+    <select id="queryUser" parameterType="int" resultType="User" >
+        select * from user where id=#{id}
+    </select>
+    
+    <select id="queryByName" parameterType="java.lang.String" resultType="com.lm.mybatis.entity.User">
+        select * from USER where name LIKE "%${value}%";
+    </select>
+    <insert id="insertUser" parameterType="com.lm.mybatis.entity.User">
+
+        <selectKey keyProperty="id" resultType="java.lang.Integer">
+            SELECT Last_insert_id()
+        </selectKey>
+        INSERT  INTO user(name,password,address,birthday) VALUES (#{name},#{password},#{address},#{birthday})
+    </insert>
+
+    <!--删除一条用户-->
+    <delete id="deleteUser" parameterType="int">
+        DELETE  FROM USER WHERE id=#{id}
+    </delete>
+
+    <!--更新一条用户-->
+    <update id="updateUser" parameterType="com.lm.mybatis.entity.User">
+        UPDATE user SET name=#{name},password=#{password},address=#{address},birthday=#{birthday} WHERE id=#{id}
+    </update>
+
+    <!--首先需要定义resultMap
+    id:resultMap的唯一标识
+    type:与之映射的java类型，这里使用的是别名
+    -->
+    <resultMap id="userResultMap" type="user">
+        <!--
+        column:查询出的列名
+        property:映射对象的属性名
+        -->
+        <id column="id_" property="id"/>
+        <result column="name_" property="name"/>
+    </resultMap>
+
+    <!--使用resultMap进行输出映射-->
+    <select id="queryUserById" parameterType="int" resultMap="userResultMap">
+        select id id_,name name_ from user where id=#{id}
+    </select>
+
+
+
+</mapper>
