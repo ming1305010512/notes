@@ -208,3 +208,19 @@ keytool -import -alias ssodemo -keystore cacerts -file d:\ssodemo.crt
 【说明】：-file指定证书的位置，也就是上一步导出证书的位置，即c:\ ssodemo.crt 命令中指定了JAVA_HOME，意思是将证书导入到客户端证书库，也就是jdk证书库中.因为客户端应用运行在本地，需要jdk的支持。
 
 回车之后，会让你输入密钥库口令，注意，这里的密码必须要输入changeit，不能输入上面指定的密码zhoubang，切记，否则导入客户端证书会有问题，如果是多台机器演示，需要在每一台客户端导入该证书，步骤都是一样的。当看到提示“是否信任此证书”，输入y回车即可
+
+
+------------------------------------------------------CAS原理分析-----------------------------------------------------
+
+当cas.qiandu.com即cas-server认证通过后，会返回给浏览器302，重定向的地址就是Referer中的service参数对应的值。后边通过get的方式携带了一个ticket令牌，这个ticket就是ST，同时会在Cookie中设置一个CASTGC，该Cookie是网站cas.qiandu.com的cookie，只有访问这个网站才会携带这个cookie过去
+
+cookie中的CASTGC：向cookie中添加该值的目的是当下次访问cas.qian.com时，浏览器将cookie中的TGC携带到服务器中，服务器根据这个TGC，查找与之对应的TGT，从而判断用户是否登录过了，是否需要展示登录界面
+
+TGT：Ticket Granted Ticket(大令牌、票根，他可以签发ST)
+
+TGC：Ticket Granted Cookie（cookie中的value），存在Cookie中，根据他可以找到TGT，他就是TGT的ID
+
+ST:Service Ticket(小令牌),是TGT生成的，默认用一次失效，即ticket值
+
+cookie中相当于有TGT，再一次请求www.qiandu.com时，会在过过滤器中取到ticket的值，即通过TGT签发得到的ST，然后通过http方式调用cas.qiandu.com验证该ticket是否有效
+
