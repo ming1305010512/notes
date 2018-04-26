@@ -43,3 +43,20 @@ public static void convertObject() {
 打印的结果：
 strJson:{"address":"北京市西城区","age":"23","name":"JSON"}
 strArray:[{"address":"北京市西城区","age":"23","name":"JSON"}]
+
+3.json字符串==》list
+```
+public static void jsonToList(){
+    String arrayStr="[{\"name\":\"JSON\",\"age\":\"24\",\"address\":\"北京市西城区\"}]";
+    //转化为list
+    List<Student> list2=(List<Student>)JSONArray.toList(JSONArray.fromObject(arrayStr), Student.class);
+    for (Student stu : list2) {
+    System.out.println(stu);
+    }
+    //转化为数组
+    Student[] ss =(Student[])JSONArray.toArray(JSONArray.fromObject(arrayStr),Student.class);
+    for (Student student : ss) {
+    System.out.println(student);
+    }
+}
+```
