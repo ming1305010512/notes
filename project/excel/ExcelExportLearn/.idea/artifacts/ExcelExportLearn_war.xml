@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="ExcelExportLearn:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="ExcelExportLearn.war">
+      <element id="artifact" artifact-name="ExcelExportLearn:war exploded" />
+    </root>
+  </artifact>
+</component>
