@@ -1,0 +1,5 @@
+org\test\spitt\config\SecurityConfig.class
+org\test\spitt\config\SpittrWebAppInitializer.class
+org\test\spitt\config\RootConfig.class
+org\test\spitt\web\HomeController.class
+org\test\spitt\config\WebConfig.class
