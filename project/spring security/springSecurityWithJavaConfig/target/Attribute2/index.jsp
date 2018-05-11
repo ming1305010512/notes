@@ -11,7 +11,7 @@
     </p>
     <c:url var="logoutUrl" value="/logout"/>
     <form class="form-inline" action="${logoutUrl}" method="post">
-        <input type="submit" value="Log out" />
+        <input type="submit" value="Logout" />
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
     </form>
 </div>
