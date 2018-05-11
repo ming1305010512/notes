@@ -1,0 +1,7 @@
+org\springframework\security\samples\config\MessageSecurityWebApplicationInitializer2.class
+org\springframework\security\samples\config\SecurityConfig.class
+org\springframework\security\samples\controller\LoginController.class
+org\springframework\security\samples\config\MessageSecurityWebApplicationInitializer.class
+org\springframework\security\samples\config\RootConfiguration.class
+org\springframework\security\samples\passwordEncoder\MyPasswordEncoder.class
+org\springframework\security\samples\mvc\WebMvcConfiguration.class
