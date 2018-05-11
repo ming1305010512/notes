@@ -90,6 +90,7 @@ public class XMLUtils {
 ```
 
 使用
+import org.jdom2.Document;
 ```
 Document document = XMLUtils.strXmlToDocument(result);
 String X_RESPONSE_DATA = XMLUtils.getValueByElementName(document,"X_RESPONSE_DATA");

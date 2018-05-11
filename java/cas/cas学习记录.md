@@ -25,7 +25,8 @@ cookie中相当于有TGT，再一次请求server/cas时，会在过过滤器中�
 对于实现ssl的方式，需要生成证书，主要步骤如下：
 - 1.生成证书，在cmd窗口输入以下命令：
 ```
-keytool -genkey -alias ssodemo -keyalg RSA -keysize 1024 -keypass longming -validity 365 -keystore c:\longming.keystore -storepass longming
+keytool -genkey -alias ssodemo -keyalg RSA -keysize 1024 -keypass longming -validity 365 -keystore 
+c:\longming.keystore -storepass longming
 ```
 -alias后面的别名自定义，-keypass指定证书密码，注意-storepass和前面的keypass的密码相同，不然tomcat配置https会访问失败 -keystore指定证书的位置，
 执行命令后出现一些信息，其中第一个让你输入“您的名字和姓氏是什么”，必须输入在**C:\Windows\System32\drivers\etc\hosts**文件中加入的服务端的域名，因为cas只能通过域名来访问，不能通过ip访问，并且如果不这么做，在最后cas回调转入你想访问的客户端应用的时候，会出现No subject alternative names present错误信息
@@ -124,20 +125,23 @@ keytool -import -alias ssodemo -keystore cacerts -file d:\ssodemo.crt
 加入依赖：
 ```
 <dependency>
-      <groupId>org.jasig.cas.client</groupId>
-      <artifactId>cas-client-core</artifactId>
-      <version>3.2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.16</version>
-    </dependency>
+    <groupId>org.jasig.cas.client</groupId>
+    <artifactId>cas-client-core</artifactId>
+    <version>3.2.1</version>
+</dependency>
+<dependency>
+    <groupId>log4j</groupId>
+    <artifactId>log4j</artifactId>
+    <version>1.2.16</version>
+</dependency>
 ```
 在web.xml中加入过滤器：
 ```
 <!-- 用于单点退出，该过滤器用于实现单点登出功能，可选配置-->
-  <listener>							 <listener-class>org.jasig.cas.client.session.SingleSignOutHttpSessionListener</listener-class>
+  <listener>							
+   <listener-class>
+    org.jasig.cas.client.session.SingleSignOutHttpSessionListener
+    </listener-class>
   </listener>
   <!-- 该过滤器用于实现单点登出功能，可选配置 -->
   <filter>
@@ -187,7 +191,9 @@ keytool -import -alias ssodemo -keystore cacerts -file d:\ssodemo.crt
       -->
   <filter>
     <filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
-    <filter-class>						org.jasig.cas.client.util.HttpServletRequestWrapperFilter</filter-class>
+    <filter-class>						
+     org.jasig.cas.client.util.HttpServletRequestWrapperFilter
+    </filter-class>
   </filter>
   <filter-mapping>
     <filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
@@ -213,112 +219,112 @@ https://server.longming.com:8443/cas/login?service=http%3A%2F%2Fclient1.longming
 对于基于springmvc框架实现的cas，可以在applicationContext.xml加入过滤器
 ```
 <!-- CAS 基本属性配置-->
-    <beans:bean id="serviceProperties"
-                class="org.springframework.security.cas.ServiceProperties">
-        <beans:property name="service"
-                        value="${cas.service}"/>
-        <beans:property name="sendRenew" value="false"/>
-    </beans:bean>
+<beans:bean id="serviceProperties"
+            class="org.springframework.security.cas.ServiceProperties">
+    <beans:property name="service"
+                    value="${cas.service}"/>
+    <beans:property name="sendRenew" value="false"/>
+</beans:bean>
 
-    <!-- CAS Filter 配置 -->
-    <beans:bean id="casFilter"
-                class="org.springframework.security.cas.web.CasAuthenticationFilter">
-        <beans:property name="authenticationManager" ref="authenticationManager"/>
-        <beans:property name="authenticationSuccessHandler" ref="successHandler"/>
-    </beans:bean>
+<!-- CAS Filter 配置 -->
+<beans:bean id="casFilter"
+            class="org.springframework.security.cas.web.CasAuthenticationFilter">
+    <beans:property name="authenticationManager" ref="authenticationManager"/>
+    <beans:property name="authenticationSuccessHandler" ref="successHandler"/>
+</beans:bean>
 
-    <beans:bean id="successHandler" class="com.hand.hap.security.CustomAuthenticationSuccessHandler">
-        <beans:property name="defaultTargetUrl" value="/index"/>
-    </beans:bean>
-
-
-    <beans:bean id="casEntryPoint"
-                class="org.springframework.security.cas.web.CasAuthenticationEntryPoint">
-        <beans:property name="loginUrl" value="${cas.ssoserver.loginurl}"/>
-        <beans:property name="serviceProperties" ref="serviceProperties"/>
-    </beans:bean>
+<beans:bean id="successHandler" class="com.hand.hap.security.CustomAuthenticationSuccessHandler">
+    <beans:property name="defaultTargetUrl" value="/index"/>
+</beans:bean>
 
 
-    <authentication-manager alias="authenticationManager">
-        <authentication-provider ref="casAuthenticationProvider"/>
-        <authentication-provider user-service-ref="customUserDetailsService">
-            <password-encoder ref="passwordManager"/>
-        </authentication-provider>
-    </authentication-manager>
-
-    <beans:bean id="casAuthenticationProvider"
-                class="org.springframework.security.cas.authentication.CasAuthenticationProvider">
-        <beans:property name="serviceProperties" ref="serviceProperties" />
-        <beans:property name="authenticationUserDetailsService" ref="customAuthenticationUserDetailsService"/>
-        <beans:property name="ticketValidator">
-            <beans:bean class="org.jasig.cas.client.validation.Cas20ServiceTicketValidator">
-                <beans:constructor-arg index="0" value="${cas.ssoserver.url}" />
-            </beans:bean>
-        </beans:property>
-        <beans:property name="key" value="an_id_for_this_auth_provider_only"/>
-    </beans:bean>
+<beans:bean id="casEntryPoint"
+            class="org.springframework.security.cas.web.CasAuthenticationEntryPoint">
+    <beans:property name="loginUrl" value="${cas.ssoserver.loginurl}"/>
+    <beans:property name="serviceProperties" ref="serviceProperties"/>
+</beans:bean>
 
 
-    <beans:bean id="customAuthenticationUserDetailsService" class="com.hand.hap.security.CustomAuthenticationUserDetailsService">
-    </beans:bean>
+<authentication-manager alias="authenticationManager">
+    <authentication-provider ref="casAuthenticationProvider"/>
+    <authentication-provider user-service-ref="customUserDetailsService">
+        <password-encoder ref="passwordManager"/>
+    </authentication-provider>
+</authentication-manager>
+
+<beans:bean id="casAuthenticationProvider"
+            class="org.springframework.security.cas.authentication.CasAuthenticationProvider">
+    <beans:property name="serviceProperties" ref="serviceProperties" />
+    <beans:property name="authenticationUserDetailsService" ref="customAuthenticationUserDetailsService"/>
+    <beans:property name="ticketValidator">
+        <beans:bean class="org.jasig.cas.client.validation.Cas20ServiceTicketValidator">
+            <beans:constructor-arg index="0" value="${cas.ssoserver.url}" />
+        </beans:bean>
+    </beans:property>
+    <beans:property name="key" value="an_id_for_this_auth_provider_only"/>
+</beans:bean>
 
 
-    <beans:bean id="singleLogoutFilter" class="org.jasig.cas.client.session.SingleSignOutFilter"/>
-    <!-- This filter redirects to the CAS Server to signal Single Logout should be performed -->
-    <beans:bean id="requestSingleLogoutFilter"
-                class="org.springframework.security.web.authentication.logout.LogoutFilter">
-        <beans:constructor-arg value="${cas.ssoserver.logouturl}"/>
-        <beans:constructor-arg>
-            <beans:bean class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler"/>
-        </beans:constructor-arg>
-        <beans:property name="filterProcessesUrl" value="/logout"/>
-    </beans:bean>
+<beans:bean id="customAuthenticationUserDetailsService" class="com.hand.hap.security.CustomAuthenticationUserDetailsService">
+</beans:bean>
 
-    <beans:bean id="csrfCasSecurityRequestMatcher" class="com.hand.hap.security.CsrfSecurityRequestMatcher">
-        <beans:property name="excludeUrls">
-            <beans:list>
-                <beans:value>/login</beans:value>
-                <beans:value>/websocket/**</beans:value>
-            </beans:list>
-        </beans:property>
-    </beans:bean>
 
-    <beans:bean id="captchaVerifierFilter" class="com.hand.hap.security.CaptchaVerifierFilter">
-        <beans:property name="captchaField" value="verifiCode"/>
-    </beans:bean>
-    <beans:bean id="loginFailureHandler" class="com.hand.hap.security.LoginFailureHandler"/>
+<beans:bean id="singleLogoutFilter" class="org.jasig.cas.client.session.SingleSignOutFilter"/>
+<!-- This filter redirects to the CAS Server to signal Single Logout should be performed -->
+<beans:bean id="requestSingleLogoutFilter"
+            class="org.springframework.security.web.authentication.logout.LogoutFilter">
+    <beans:constructor-arg value="${cas.ssoserver.logouturl}"/>
+    <beans:constructor-arg>
+        <beans:bean class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler"/>
+    </beans:constructor-arg>
+    <beans:property name="filterProcessesUrl" value="/logout"/>
+</beans:bean>
+
+<beans:bean id="csrfCasSecurityRequestMatcher" class="com.hand.hap.security.CsrfSecurityRequestMatcher">
+    <beans:property name="excludeUrls">
+        <beans:list>
+            <beans:value>/login</beans:value>
+            <beans:value>/websocket/**</beans:value>
+        </beans:list>
+    </beans:property>
+</beans:bean>
+
+<beans:bean id="captchaVerifierFilter" class="com.hand.hap.security.CaptchaVerifierFilter">
+    <beans:property name="captchaField" value="verifiCode"/>
+</beans:bean>
+<beans:bean id="loginFailureHandler" class="com.hand.hap.security.LoginFailureHandler"/>
 ```
 
 ##3、关闭HTTPS，使用http的方法
 1.修改WEB-INF/deployerConfigContext.xml
 ```
-    <bean id="proxyAuthenticationHandler"
-          class="org.jasig.cas.authentication.handler.support.HttpBasedServiceCredentialsAuthenticationHandler"
-          p:httpClient-ref="supportsTrustStoreSslSocketFactoryHttpClient"
-          p:requireSecure="false" />
+<bean id="proxyAuthenticationHandler"
+    class="org.jasig.cas.authentication.handler.support.HttpBasedServiceCredentialsAuthenticationHandler"
+    p:httpClient-ref="supportsTrustStoreSslSocketFactoryHttpClient"
+    p:requireSecure="false" />
 ```          
 
 在p:httpClient-ref="supportsTrustStoreSslSocketFactoryHttpClient"后增加p:requireSecure="false"
 
 2.修改WEB-INF/spring-configuration/ticketGrantingTicketCookieGenerator.xml
 ```
-    <bean id="ticketGrantingTicketCookieGenerator" class="org.jasig.cas.web.support.CookieRetrievingCookieGenerator"
-          c:casCookieValueManager-ref="cookieValueManager"
-          p:cookieSecure="false"
-          p:cookieMaxAge="-1"
-          p:cookieName="TGC"
-          p:cookiePath=""/>
+<bean id="ticketGrantingTicketCookieGenerator" class="org.jasig.cas.web.support.CookieRetrievingCookieGenerator"
+        c:casCookieValueManager-ref="cookieValueManager"
+        p:cookieSecure="false"
+        p:cookieMaxAge="-1"
+        p:cookieName="TGC"
+        p:cookiePath=""/>
 ```          
 将p:cookieSecure="true"修改为p:cookieSecure="false"
 
 3.修改WEB-INF/spring-configuration/warnCookieGenerator.xml
 ```
-    <bean id="warnCookieGenerator" class="org.jasig.cas.web.support.CookieRetrievingCookieGenerator"
-          p:cookieHttpOnly="false"
-          p:cookieSecure="false"
-          p:cookieMaxAge="-1"
-          p:cookieName="CASPRIVACY"
-          p:cookiePath=""/>
+<bean id="warnCookieGenerator" class="org.jasig.cas.web.support.CookieRetrievingCookieGenerator"
+        p:cookieHttpOnly="false"
+        p:cookieSecure="false"
+        p:cookieMaxAge="-1"
+        p:cookieName="CASPRIVACY"
+        p:cookiePath=""/>
 ```          
 将p:cookieSecure="true"修改为p:cookieSecure="false"
 
@@ -340,9 +346,9 @@ casLoginView.url=/WEB-INF/view/jsp/tiglle/ui/login.jsp
 - 2、修改登出后跳转的页面
 修改webapp/WEB-INF/cas-servlet.xml文件
 ```
- <bean id="logoutAction" class="org.jasig.cas.web.flow.LogoutAction"
-        p:servicesManager-ref="servicesManager"
-        p:followServiceRedirects="${cas.logout.followServiceRedirects:false}"/>
+<bean id="logoutAction" class="org.jasig.cas.web.flow.LogoutAction"
+    p:servicesManager-ref="servicesManager"
+    p:followServiceRedirects="${cas.logout.followServiceRedirects:false}"/>
 ```
 将cas.logout.followServiceRedirects:false修改为true，然后登出连接添加srevice=跳转页面
 ```
