@@ -1,2 +1,10 @@
 1、Spring Security入门
 https://blog.csdn.net/dalangzhonghangxing/article/details/53024640
+2、官方文档需要看的知识
+（1）第五部分：V. Authorization认证
+（2）第四部分：IV. Web Application Security
+（3）第三部分：III. Testing
+（4）第二部分：II. Architecture and Implementation架构和实现
+（5）第一部分：序言II. Architecture and Implementation
+
+主要阅读第一部分和第二年把部分
